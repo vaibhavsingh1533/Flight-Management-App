@@ -1,9 +1,11 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import InstallPrompt from "@/components/pwa/InstallPrompt";
 
 export const metadata: Metadata = {
-  title: "Flight Management App",
-  description: "Flight booking and management application"
+  title: "SkyBook",
+  description: "Flight booking and management application",
+  manifest: "/manifest.json"
 };
 
 export default function RootLayout({
@@ -13,7 +15,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <InstallPrompt />
+      </body>
     </html>
   );
 }

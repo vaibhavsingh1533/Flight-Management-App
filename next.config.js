@@ -5,7 +5,31 @@ const withPWA = require("next-pwa")({
   disable: process.env.NODE_ENV === "development",
   fallbacks: {
     document: "/offline"
-  }
+  },
+  runtimeCaching: [
+    {
+      urlPattern: /\/flights.*/,
+      handler: "StaleWhileRevalidate",
+      options: {
+        cacheName: "flight-search-cache",
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 24 * 60 * 60
+        }
+      }
+    },
+    {
+      urlPattern: /\.(?:js|css|png|jpg|jpeg|svg|woff2?)$/,
+      handler: "CacheFirst",
+      options: {
+        cacheName: "static-assets-cache",
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 30 * 24 * 60 * 60
+        }
+      }
+    }
+  ]
 });
 
 /** @type {import('next').NextConfig} */
