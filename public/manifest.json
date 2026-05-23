@@ -1,7 +1,8 @@
 {
-  "name": " Flight Management",
+  "name": "Flight Management",
   "short_name": "SkyBook",
   "description": "Flight booking and management application",
+  "id": "/",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
