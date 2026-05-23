@@ -1,8 +1,20 @@
 import FlightSearchForm from "@/components/flights/FlightSearchForm";
 import Link from "next/link";
-import Navbar from "@/components/layout/Navbar";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import LogoutButton from "@/components/auth/LogoutButton";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient();
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
   return (
     <main
       className="min-h-screen bg-cover bg-center"
@@ -14,15 +26,19 @@ export default function HomePage() {
       <div className="min-h-screen bg-black/60">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
           <h1 className="text-2xl font-bold text-white">
-            
+            SkyBook
           </h1>
 
-          <Link
-            href="/bookings"
-            className="rounded-lg border border-white/30 px-4 py-2 text-white backdrop-blur-md"
-          >
-            My Bookings
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/bookings"
+              className="rounded-lg border border-white/30 px-4 py-2 text-white backdrop-blur-md"
+            >
+              My Bookings
+            </Link>
+
+            <LogoutButton />
+          </div>
         </nav>
 
         <div className="mx-auto flex min-h-[85vh] max-w-7xl flex-col items-center justify-center px-6 lg:flex-row lg:justify-between">
@@ -40,6 +56,7 @@ export default function HomePage() {
 
             <p className="mt-6 max-w-xl text-lg text-white/80">
               Search flights, choose seats in real time,
+              <br />
               manage bookings, and travel smarter
             </p>
           </div>

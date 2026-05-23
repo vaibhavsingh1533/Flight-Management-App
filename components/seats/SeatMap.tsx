@@ -16,12 +16,14 @@ interface SeatMapProps {
     nationality: string;
     dob: string;
   };
+  basePrice: number;
 }
 
 export default function SeatMap({
   seats,
   flightId,
-  passengerData
+  passengerData,
+  basePrice
 }: SeatMapProps) {
   const router = useRouter();
   const supabase = createClient();
@@ -34,6 +36,8 @@ export default function SeatMap({
   const [seatList, setSeatList] = useState<Seat[]>(seats);
   const [selectedSeat, setLocalSelectedSeat] =
     useState<Seat | null>(null);
+  const [showPriceModal, setShowPriceModal] =
+    useState(false);
 
   useEffect(() => {
     const channel = supabase
@@ -91,6 +95,11 @@ export default function SeatMap({
 
   function handleContinue() {
     if (!selectedSeat) return;
+    setShowPriceModal(true);
+  }
+
+  function confirmBooking() {
+    if (!selectedSeat) return;
 
     setBookingStep(3);
 
@@ -107,6 +116,9 @@ export default function SeatMap({
     );
   }
 
+  const totalPrice =
+    basePrice + Number(selectedSeat?.extra_fee || 0);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-white to-blue-100 p-6">
       <div className="mx-auto max-w-6xl">
@@ -115,7 +127,6 @@ export default function SeatMap({
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-4xl">
               ✈
             </div>
-
 
             <h2 className="mt-3 text-4xl font-bold">
               Choose Your Seat
@@ -145,7 +156,7 @@ export default function SeatMap({
 
           <div className="rounded-3xl bg-slate-50 p-6">
             <div className="mb-8 rounded-2xl bg-slate-200 p-4 text-center font-semibold text-slate-600">
-              Seats 
+              Seats
             </div>
 
             <div className="space-y-10 overflow-x-auto">
@@ -153,7 +164,6 @@ export default function SeatMap({
                 <h3 className="mb-4 text-xl font-bold text-amber-600">
                   First Class
                 </h3>
-
                 <div className="grid min-w-[420px] grid-cols-4 gap-4">
                   {renderSeats(firstClass)}
                 </div>
@@ -163,7 +173,6 @@ export default function SeatMap({
                 <h3 className="mb-4 text-xl font-bold text-purple-600">
                   Business Class
                 </h3>
-
                 <div className="grid min-w-[420px] grid-cols-4 gap-4">
                   {renderSeats(businessClass)}
                 </div>
@@ -173,7 +182,6 @@ export default function SeatMap({
                 <h3 className="mb-4 text-xl font-bold text-blue-600">
                   Economy Class
                 </h3>
-
                 <div className="grid min-w-[420px] grid-cols-6 gap-4">
                   {renderSeats(economyClass)}
                 </div>
@@ -186,10 +194,73 @@ export default function SeatMap({
             onClick={handleContinue}
             className="mt-10 w-full rounded-2xl bg-blue-600 p-4 text-lg font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
           >
-            Continue to Confirmation
+            Continue
           </button>
         </div>
       </div>
+
+      {showPriceModal && selectedSeat && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6">
+          <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
+            <h2 className="text-2xl font-bold text-slate-900">
+              Confirm Booking
+            </h2>
+
+            <p className="mt-2 text-slate-600">
+              Review your fare before booking.
+            </p>
+
+            <div className="mt-6 space-y-4">
+              <div className="flex justify-between">
+                <span>Seat</span>
+                <span className="font-semibold">
+                  {selectedSeat.seat_number}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Class</span>
+                <span className="font-semibold capitalize">
+                  {selectedSeat.class}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Base Fare</span>
+                <span>₹{basePrice}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Seat Upgrade</span>
+                <span>₹{selectedSeat.extra_fee}</span>
+              </div>
+
+              <div className="border-t pt-4">
+                <div className="flex justify-between text-xl font-bold text-blue-600">
+                  <span>Total</span>
+                  <span>₹{totalPrice}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex gap-3">
+              <button
+                onClick={() => setShowPriceModal(false)}
+                className="flex-1 rounded-xl border px-4 py-3 font-semibold"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmBooking}
+                className="flex-1 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

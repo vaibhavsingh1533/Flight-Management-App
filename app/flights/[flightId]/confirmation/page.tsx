@@ -57,8 +57,9 @@ export default async function ConfirmationPage({
     );
   }
 
-  const totalPrice =
-    Number(flight.base_price) + Number(seat.extra_fee);
+  const baseFare = Number(flight.base_price);
+  const seatUpgradeFee = Number(seat.extra_fee);
+  const totalPrice = baseFare + seatUpgradeFee;
 
   const pnr = generatePNR();
 
@@ -98,7 +99,7 @@ export default async function ConfirmationPage({
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-sky-100 via-white to-blue-100 p-6">
-      <div className="mx-auto flex min-h-screen max-w-3xl items-center justify-center">
+      <div className="mx-auto flex min-h-screen max-w-4xl items-center justify-center">
         <div className="w-full rounded-3xl bg-white p-8 shadow-2xl sm:p-10">
           <div className="text-center">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl">
@@ -114,7 +115,7 @@ export default async function ConfirmationPage({
             </p>
           </div>
 
-          <div className="mt-8 rounded-2xl bg-slate-50 p-6">
+          <div className="mt-8 rounded-2xl bg-slate-50 p-6 text-center">
             <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
               Booking Reference
             </p>
@@ -157,17 +158,35 @@ export default async function ConfirmationPage({
                 Seat
               </p>
               <p className="mt-1 font-semibold">
-                {seat.seat_number}
+                {seat.seat_number} ({seat.class})
               </p>
             </div>
+          </div>
 
-            <div className="rounded-2xl border p-5 sm:col-span-2">
-              <p className="text-sm text-slate-500">
-                Total Paid
-              </p>
-              <p className="mt-1 text-2xl font-bold text-blue-600">
-                ₹{totalPrice}
-              </p>
+          <div className="mt-8 rounded-2xl border bg-slate-50 p-6">
+            <h2 className="text-xl font-bold text-slate-900">
+              Fare Breakdown
+            </h2>
+
+            <div className="mt-5 space-y-4">
+              <div className="flex justify-between text-slate-600">
+                <span>Base Flight Fare</span>
+                <span>₹{baseFare}</span>
+              </div>
+
+              <div className="flex justify-between text-slate-600">
+                <span>
+                  Seat Upgrade ({seat.class})
+                </span>
+                <span>₹{seatUpgradeFee}</span>
+              </div>
+
+              <div className="border-t pt-4">
+                <div className="flex justify-between text-xl font-bold text-blue-600">
+                  <span>Total Paid</span>
+                  <span>₹{totalPrice}</span>
+                </div>
+              </div>
             </div>
           </div>
 

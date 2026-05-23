@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import SeatMap from "@/components/seats/SeatMap";
+import { redirect } from "next/navigation";
 
 interface SeatSelectionPageProps {
   params: {
@@ -19,21 +20,38 @@ export default async function SeatSelectionPage({
 }: SeatSelectionPageProps) {
   const supabase = await createClient();
 
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
   const { data: seats } = await supabase
     .from("seats")
     .select("*")
     .eq("flight_id", params.flightId)
     .order("seat_number");
 
+  const { data: flight } = await supabase
+    .from("flights")
+    .select("base_price")
+    .eq("id", params.flightId)
+    .single();
+
+  if (!seats || !flight) {
+    redirect("/");
+  }
+
   return (
-    <main className="min-h-screen bg-slate-100 p-6">
-      <div className="mx-auto max-w-6xl rounded-xl bg-white p-8 shadow">
-        <SeatMap
-          seats={seats || []}
-          flightId={params.flightId}
-          passengerData={searchParams}
-        />
-      </div>
+    <main>
+      <SeatMap
+        seats={seats}
+        flightId={params.flightId}
+        passengerData={searchParams}
+        basePrice={Number(flight.base_price)}
+      />
     </main>
   );
 }
