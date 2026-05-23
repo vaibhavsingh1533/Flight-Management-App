@@ -248,6 +248,20 @@ Example:
 
 ---
 
+## Lighthouse Audit
+
+Performance audit on production deployment:
+
+![Lighthouse Audit](./screenshots/lighthouse-audit.png)
+
+---
+
+## PWA Implementation Proof
+
+Progressive Web App manifest and installability configuration:
+
+![PWA Manifest](./screenshots/pwa-manifest.png)
+
 ## Author
 
 Developed by Vaibhav Singh
